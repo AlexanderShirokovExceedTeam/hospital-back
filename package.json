@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "server": "nodemon app.js",
+    "client": "npm run start --prefix ../hospital-front",
+    "dev": "concurrently \"npm run server\" \"npm run client\""
   },
   "repository": {
     "type": "git",
@@ -17,6 +19,9 @@
   },
   "homepage": "https://github.com/AlexanderShirokovExceedTeam/hospital-back#readme",
   "dependencies": {
-    "express": "^4.17.1"
+    "concurrently": "^6.3.0",
+    "express": "^4.17.1",
+    "mongoose": "^6.0.9",
+    "nodemon": "^2.0.13"
   }
 }

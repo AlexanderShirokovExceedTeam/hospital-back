@@ -1,10 +1,20 @@
 const express = require('express');
+const mongoose = require('mongoose');
+
 const app = express();
+const PORT = process.env.PORT || 8080;
+const url = "mongodb+srv://admin:admin@cluster0.6jwrl.mongodb.net/hospital-db?retryWrites=true&w=majority"
 
-app.get('/', (req, res) => {
-  res.send('Backend was init.');
-});
+const startServer = async () => {
+  try {
+    await mongoose.connect(url, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true
+    });
+    app.listen(PORT, () => {
+      console.log(`Hospital server listening on port ${PORT}!`);
+    });
+  } catch (err) {console.error(err)}
+}
 
-app.listen(8080, () => {
-  console.log('Example app listening on port 8000!.');
-});
+startServer();
