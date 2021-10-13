@@ -5,3 +5,35 @@ module.exports.getAllVisits = (req, res, next) => {
 		res.send({data: result});
 	});
 };
+
+module.exports.createNewVisit = (req, res) => {
+	if (reqBodyIsValid(req.body)) {
+		const visit = new Visit(req.body);
+		visit.save().then(result => {
+			res.send({data: result});
+		});
+	} else {
+		res.status(400).send({
+			message: 'Invalid data'
+		});
+	}
+};
+
+const reqBodyIsValid = (reqBody) => {	
+	if (reqBody.hasOwnProperty('patient')
+	&& reqBody.hasOwnProperty('doctor')
+	&& reqBody.hasOwnProperty('date')
+	&& reqBody.hasOwnProperty('problem')) {
+		const { patient, doctor, date, problem } = reqBody;		
+			if ( patient
+				&& doctor
+				&& date
+				&& problem) {
+				return true;
+			} else {
+				return false;
+			}
+	} else {
+		return false;
+	}
+}
