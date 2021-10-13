@@ -7,7 +7,8 @@ module.exports.getAllVisits = (req, res, next) => {
 };
 
 module.exports.createNewVisit = (req, res) => {
-	if (reqBodyIsValid(req.body)) {
+	const allFields = true;
+	if (reqBodyIsValid(req.body, allFields)) {
 		const visit = new Visit(req.body);
 		visit.save().then(result => {
 			res.send({data: result});
@@ -20,7 +21,8 @@ module.exports.createNewVisit = (req, res) => {
 };
 
 module.exports.changeVisitInfo = (req, res) => {
-	if (reqBodyIsValid(req.body)) {
+	const noAllFields = false;
+	if (reqBodyIsValid(req.body, noAllFields)) {
 		Visit.updateOne({_id: req.body._id}, req.body).then(result => {
 			Visit.find().then(result => {
 				res.send({data: result});
@@ -33,8 +35,9 @@ module.exports.changeVisitInfo = (req, res) => {
 	}
 };
 
-const reqBodyIsValid = (reqBody) => {	
-	if (reqBody.hasOwnProperty('patient')
+const reqBodyIsValid = (reqBody, fillAllFields) => {
+	if (fillAllFields
+			&& reqBody.hasOwnProperty('patient')
 			&& reqBody.hasOwnProperty('doctor')
 			&& reqBody.hasOwnProperty('date')
 			&& reqBody.hasOwnProperty('problem')) {
@@ -47,7 +50,13 @@ const reqBodyIsValid = (reqBody) => {
 			} else {
 				return false;
 			}
+	} else if (!fillAllFields
+						&& reqBody.hasOwnProperty('patient')
+						|| reqBody.hasOwnProperty('doctor')
+						|| reqBody.hasOwnProperty('date')
+						|| reqBody.hasOwnProperty('problem')) {
+							return true;
 	} else {
-		return false;
+		return false;		
 	}
 }
