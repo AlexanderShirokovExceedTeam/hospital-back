@@ -1,4 +1,5 @@
 const { Schema } = require('mongoose');
+const mongoose = require('mongoose');
 
 const visitSchema = new Schema({
   patient:  {type: String,  required: true, unique: true},
@@ -7,4 +8,4 @@ const visitSchema = new Schema({
   problem:  {type: String,  required: true}
 });
 
-module.exports = model('visits', visitSchema);
+module.exports = Visit = mongoose.model('visits', visitSchema);
