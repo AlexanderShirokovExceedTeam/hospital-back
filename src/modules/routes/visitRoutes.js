@@ -11,5 +11,6 @@ const {
 //  Visit routes
 
 routerVisit.get('/allVisits', getAllVisits);
+routerVisit.post('/createVisit', createNewVisit);
 
 module.exports = routerVisit;
