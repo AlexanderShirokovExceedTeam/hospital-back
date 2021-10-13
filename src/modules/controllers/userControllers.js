@@ -11,7 +11,7 @@ module.exports.getAllUsers = (req, res, next) => {
 };
 
 module.exports.userRegistration = async (req, res, next) => {
-  const { _id, username, password } = req.body;
+  const { username, password } = req.body;
   const usernameIsUsed = await User.findOne({ username });
   if (usernameIsUsed) {
     return res.status(300).json({message: "Username is already taken, please try another."});
@@ -32,6 +32,7 @@ module.exports.userRegistration = async (req, res, next) => {
       });
 
       await user.save();
+      const { _id } = user;
       const token = generateToken(username, _id);
 
       res.status(201).json({
@@ -48,19 +49,22 @@ module.exports.userRegistration = async (req, res, next) => {
 module.exports.userAuthentification = async (req, res, next) => {
   const { _id, username, password } = req.body;
   const usernameIsUsed = await User.findOne({ username });
+  
   if (!usernameIsUsed) {
     return res.status(400).json({message: "Username is not entered or invalid."});
   } else {
-    const passwordsMatched = bcrypt.compareSync(password, usernameIsUsed.password);
+    const { password: passwordOfUsed } = usernameIsUsed;
+    const passwordsMatched = bcrypt.compareSync(password, passwordOfUsed);
+
     if (!passwordsMatched) {
       res.status(401).json({message: "Invalid password!"});
     } else {
-      const token = jwt.sign({
-        username: usernameIsUsed.username,
-        userId: usernameIsUsed._id
-      }, key.jwt, {expiresIn: "1h"});
-      res.status(200).json({
-        token: `Bearer ${token}`
+      const token = generateToken(username, _id);
+      
+      res.status(201).json({
+        message: "Authentication was successful.",
+        username: username,
+        token: token
       });
     }
   }
