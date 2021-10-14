@@ -13,5 +13,6 @@ const {
 routerVisit.get('/allVisits', getAllVisits);
 routerVisit.post('/createVisit', createNewVisit);
 routerVisit.patch('/updateVisit', changeVisitInfo);
+routerVisit.delete('/deleteVisit', deleteVisit);
 
 module.exports = routerVisit;
