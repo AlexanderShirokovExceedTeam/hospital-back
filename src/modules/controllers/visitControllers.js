@@ -35,6 +35,18 @@ module.exports.changeVisitInfo = (req, res) => {
 	}
 };
 
+module.exports.deleteVisit = (req, res) => {
+	if (req.query._id) {
+		Visit.deleteOne({_id: req.query._id}).then(result => {
+			Visit.find().then(result => {
+				res.send({data: result});
+			});
+		});
+	} else {
+		return res.status(422).send('Error! Param is not correct');
+	}
+};
+
 const reqBodyIsValid = (reqBody, fillAllFields) => {
 	if (fillAllFields
 			&& reqBody.hasOwnProperty('patient')
