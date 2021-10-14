@@ -30,7 +30,7 @@ module.exports.changeVisitInfo = (req, res) => {
 		});
 	} else {
 		res.status(422).send({
-			message: 'Error! Fill all fields!'
+			message: 'Error! Fill some or all fields!'
 		});
 	}
 };
@@ -51,11 +51,12 @@ const reqBodyIsValid = (reqBody, fillAllFields) => {
 				return false;
 			}
 	} else if (!fillAllFields
-						&& reqBody.hasOwnProperty('patient')
+						&& reqBody.hasOwnProperty('_id')
+						&& (reqBody.hasOwnProperty('patient')
 						|| reqBody.hasOwnProperty('doctor')
 						|| reqBody.hasOwnProperty('date')
-						|| reqBody.hasOwnProperty('problem')) {
-							return true;
+						|| reqBody.hasOwnProperty('problem'))) {
+		return true;
 	} else {
 		return false;		
 	}
