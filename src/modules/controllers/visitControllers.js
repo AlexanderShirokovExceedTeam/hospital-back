@@ -1,12 +1,12 @@
 const Visit = require('../../db/models/visits');
 
-module.exports.getAllVisits = (req, res, next) => {
+module.exports.getAllVisits = async (req, res, next) => {
   Visit.find().then(result => {
 		res.send({data: result});
 	});
 };
 
-module.exports.createNewVisit = (req, res) => {
+module.exports.createNewVisit = async (req, res) => {
 	const allFields = true;
 	if (reqBodyIsValid(req.body, allFields)) {
 		const visit = new Visit(req.body);
@@ -20,7 +20,7 @@ module.exports.createNewVisit = (req, res) => {
 	}
 };
 
-module.exports.changeVisitInfo = (req, res) => {
+module.exports.changeVisitInfo = async (req, res) => {
 	const noAllFields = false;
 	if (reqBodyIsValid(req.body, noAllFields)) {
 		Visit.updateOne({_id: req.body._id}, req.body).then(result => {
@@ -35,7 +35,7 @@ module.exports.changeVisitInfo = (req, res) => {
 	}
 };
 
-module.exports.deleteVisit = (req, res) => {
+module.exports.deleteVisit = async (req, res) => {
 	if (req.query._id) {
 		Visit.deleteOne({_id: req.query._id}).then(result => {
 			Visit.find().then(result => {

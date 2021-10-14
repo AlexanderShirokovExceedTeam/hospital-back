@@ -4,7 +4,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const key = require('../keys/keys');
 
-module.exports.getAllUsers = (req, res, next) => {
+module.exports.getAllUsers = async (req, res, next) => {
   User.find().then(result => {
 		res.send({data: result});
 	});
@@ -24,49 +24,52 @@ module.exports.userRegistration = async (req, res, next) => {
         errors: errors.array(),
         message: 'Invalid registration data'
       });
-    } else {
-      const salt = bcrypt.genSaltSync(10);
-      const user = new User({
-        username,
-        password: bcrypt.hashSync(password, salt)
-      });
-
-      await user.save();
-      const { _id } = user;
-      const token = generateToken(username, _id);
-
-      res.status(201).json({
-        message: "New user is created.",
-        user: user,
-        token: token
-      });
     }
+    const salt = bcrypt.genSaltSync(10);
+    const user = new User({
+      username,
+      password: bcrypt.hashSync(password, salt)
+    });
+
+    await user.save();
+    const { _id } = user;
+    const token = generateToken(username, _id);
+
+    res.status(201).json({
+      message: "New user is created.",
+      user: user,
+      token: token
+    });    
   } catch (err) {
     console.log(err);
+    res.status(400).json({ message: 'Registration error'});
   }
 };
 
 module.exports.userAuthentification = async (req, res, next) => {
-  const { _id, username, password } = req.body;
-  const usernameIsUsed = await User.findOne({ username });
-  
-  if (!usernameIsUsed) {
-    return res.status(400).json({message: "Username is not entered or invalid."});
-  } else {
+  try {
+    const { _id, username, password } = req.body;
+    const usernameIsUsed = await User.findOne({ username });
+    
+    if (!usernameIsUsed) {
+      return res.status(400).json({message: "Username is not entered or invalid."});
+    }
     const { password: passwordOfUsed } = usernameIsUsed;
     const passwordsMatched = bcrypt.compareSync(password, passwordOfUsed);
-
+  
     if (!passwordsMatched) {
-      res.status(401).json({message: "Invalid password!"});
-    } else {
-      const token = generateToken(username, _id);
-      
-      res.status(201).json({
-        message: "Authentication was successful.",
-        username: username,
-        token: token
-      });
+      return res.status(401).json({message: "Invalid password!"});
     }
+    const token = generateToken(username, _id);
+    
+    res.status(201).json({
+      message: "Authentication was successful.",
+      username: username,
+      token: token
+    });    
+  } catch (err) {
+    console.log(err);
+    res.status(400).json({ message: 'Login error'});
   }
 };
 
