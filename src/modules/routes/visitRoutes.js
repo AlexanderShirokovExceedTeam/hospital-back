@@ -1,5 +1,6 @@
 const express = require('express');
 const routerVisit = express.Router();
+const middleware = require('../middleware/middleware');
 
 const {
   getAllVisits,
@@ -10,9 +11,9 @@ const {
 
 //  Visit routes
 
-routerVisit.get('/allVisits', getAllVisits);
-routerVisit.post('/createVisit', createNewVisit);
-routerVisit.patch('/updateVisit', changeVisitInfo);
-routerVisit.delete('/deleteVisit', deleteVisit);
+routerVisit.get('/allVisits', middleware, getAllVisits);
+routerVisit.post('/createVisit', middleware, createNewVisit);
+routerVisit.patch('/updateVisit', middleware, changeVisitInfo);
+routerVisit.delete('/deleteVisit', middleware, deleteVisit);
 
 module.exports = routerVisit;

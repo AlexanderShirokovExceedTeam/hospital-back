@@ -1,17 +1,26 @@
 const Visit = require('../../db/models/visits');
+const jwt = require('jsonwebtoken');
+const key = require('../keys/keys');
 
-module.exports.getAllVisits = (req, res, next) => {
-  Visit.find().then(result => {
+module.exports.getAllVisits = async (req, res) => {
+	const idFromToken = { userId: req.user._id };
+
+	Visit.find(idFromToken).then(result => {
 		res.send({data: result});
 	});
 };
 
-module.exports.createNewVisit = (req, res) => {
+module.exports.createNewVisit = async (req, res) => {
 	const allFields = true;
+	
 	if (reqBodyIsValid(req.body, allFields)) {
+		req.body.userId = req.user._id;
 		const visit = new Visit(req.body);
+
 		visit.save().then(result => {
-			res.send({data: result});
+			Visit.find({ userId: req.user._id }).then(result => {
+				res.send({ data: result });
+			});
 		});
 	} else {
 		res.status(400).send({
@@ -20,11 +29,12 @@ module.exports.createNewVisit = (req, res) => {
 	}
 };
 
-module.exports.changeVisitInfo = (req, res) => {
+module.exports.changeVisitInfo = async (req, res) => {
 	const noAllFields = false;
+
 	if (reqBodyIsValid(req.body, noAllFields)) {
 		Visit.updateOne({_id: req.body._id}, req.body).then(result => {
-			Visit.find().then(result => {
+			Visit.find({ userId: req.user._id }).then(result => {
 				res.send({data: result});
 			});
 		});
@@ -35,10 +45,10 @@ module.exports.changeVisitInfo = (req, res) => {
 	}
 };
 
-module.exports.deleteVisit = (req, res) => {
+module.exports.deleteVisit = async (req, res) => {
 	if (req.query._id) {
 		Visit.deleteOne({_id: req.query._id}).then(result => {
-			Visit.find().then(result => {
+			Visit.find({ userId: req.user._id }).then(result => {
 				res.send({data: result});
 			});
 		});

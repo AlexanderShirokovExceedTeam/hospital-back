@@ -1,6 +1,7 @@
 const express = require('express');
 const routerUser = express.Router();
 const { check } = require('express-validator');
+const middleware = require('../middleware/middleware');
 
 const {
   getAllUsers,
@@ -8,7 +9,7 @@ const {
   userAuthentification
 } = require('../controllers/userControllers');
 
-routerUser.get('/getAllUsers', getAllUsers);
+routerUser.get('/getAllUsers', middleware, getAllUsers);
 routerUser.post('/userRegistration',
   [
     check('username', 'Invalid username!').isLength({ min: 6 }),
