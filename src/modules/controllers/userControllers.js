@@ -48,12 +48,13 @@ module.exports.userRegistration = async (req, res, next) => {
 
 module.exports.userAuthentification = async (req, res, next) => {
   try {
-    const { _id, username, password } = req.body;
+    const { username, password } = req.body;
     const usernameIsUsed = await User.findOne({ username });
     
     if (!usernameIsUsed) {
       return res.status(400).json({message: "Username is not entered or invalid."});
     }
+    const { _id } = usernameIsUsed;
     const { password: passwordOfUsed } = usernameIsUsed;
     const passwordsMatched = bcrypt.compareSync(password, passwordOfUsed);
   
@@ -75,7 +76,7 @@ module.exports.userAuthentification = async (req, res, next) => {
 
 const generateToken = (user, id) => {
   return jwt.sign(
-    { user, id },
+    { user, _id: id },
     key.jwt,
     { expiresIn: "1h" }
   );
